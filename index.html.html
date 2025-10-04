@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP Fogos Premium</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e1b4b 0%, #7c3aed 50%, #1e1b4b 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: rgba(30, 27, 75, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 24px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #9ca3af;
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #d1d5db;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(30, 27, 75, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border: none;
+            border-radius: 12px;
+            color: #1e1b4b;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(30, 27, 75, 0.8);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 24px;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .sidebar-logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .sidebar-title h2 {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .sidebar-title p {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: transparent;
+            border: none;
+            color: #9ca3af;
+            font-size: 16px;
+            text-align: left;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #1e1b4b;
+            font-weight: 600;
+        }
+
+        .nav-item span:first-child {
+            font-size: 24px;
+        }
+
+        .logout-btn {
+            margin-top: 24px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-header h2 {
+            font-size: 36px;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: #9ca3af;
+            font-size: 16px;
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .btn-primary {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border: none;
+            border-radius: 12px;
+            color: #1e1b4b;
+            font-weight: 700;
+            cursor: pointer;
+            width: auto;
+        }
+
+        .btn-secondary {
+            padding: 12px 24px;
+            background: rgba(59, 130, 246, 0.2);
+            border: none;
+            border-radius: 12px;
+            color: #3b82f6;
+            font-weight: 600;
+            cursor: pointer;
+            width: auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: rgba(30, 27, 75, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .stat-label {
+            color: #9ca3af;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .card {
+            background: rgba(30, 27, 75, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .badge-sku {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .badge-stock-high {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .badge-stock-medium {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .badge-stock-low {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .card-description {
+            color: #9ca3af;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .card-price {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fbbf24;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            width: 44px;
+            height: 44px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            border-radius: 10px;
+        }
+
+        .btn-edit {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: rgba(30, 27, 75, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            margin-bottom: 24px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            background: rgba(107, 114, 128, 0.2);
+            color: #9ca3af;
+        }
+
+        .btn-save {
+            flex: 1;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #1e1b4b;
+        }
+
+        .products-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .movement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .movement-card {
+            background: rgba(30, 27, 75, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .movement-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .movement-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn-entry {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            padding: 12px;
+            font-weight: 600;
+        }
+
+        .btn-exit {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            padding: 12px;
+            font-weight: 600;
+        }
+
+        .btn-barcode {
+            background: rgba(168, 85, 247, 0.2);
+            color: #a855f7;
+        }
+
+        .btn-qr {
+            background: rgba(99, 102, 241, 0.2);
+            color: #6366f1;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .btn-export {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            padding: 12px 24px;
+            font-weight: 600;
+        }
+
+        .barcode-modal {
+            text-align: center;
+        }
+
+        .barcode-modal svg {
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .barcode-modal canvas {
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script>
+        const state = {
+            token: null,
+            currentPage: 'dashboard',
+            products: [],
+            suppliers: []
+        };
+
+        function loadDemoData() {
+            state.products = [
+                {id: 1, sku: 'FW-001', name: 'Fogos Cascata Grande', description: 'Efeito cascata com duração de 60 segundos', stock: 150, price: 89.90},
+                {id: 2, sku: 'FW-002', name: 'Rojão Bomba', description: 'Alto poder de detonação', stock: 45, price: 12.50},
+                {id: 3, sku: 'FW-003', name: 'Chuva de Prata', description: 'Efeito visual espetacular', stock: 200, price: 45.00},
+                {id: 4, sku: 'FW-004', name: 'Morteiro 12 Tiros', description: 'Lançamento vertical com cores variadas', stock: 30, price: 125.00},
+                {id: 5, sku: 'FW-005', name: 'Sparkler Dourado', description: 'Duração de 2 minutos', stock: 500, price: 3.50}
+            ];
+            state.suppliers = [
+                {id: 1, name: 'Pirotecnia Brasil Ltda', contact: '(11) 98765-4321', notes: 'Fornecedor principal'},
+                {id: 2, name: 'Fogos & Cia', contact: '(21) 99876-5432', notes: 'Bons preços'},
+                {id: 3, name: 'Explosivos Premium', contact: '(31) 97654-3210', notes: 'Produtos importados'}
+            ];
+        }
+
+        function handleLogin() {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            if (user && pass) {
+                state.token = 'demo';
+                loadDemoData();
+                render();
+            } else {
+                alert('Preencha usuário e senha!');
+            }
+        }
+
+        function handleLogout() {
+            state.token = null;
+            state.currentPage = 'dashboard';
+            render();
+        }
+
+        function navigateTo(page) {
+            state.currentPage = page;
+            render();
+        }
+
+        function showModal(content) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.id = 'modal';
+            modal.onclick = (e) => { if (e.target.id === 'modal') closeModal(); };
+            modal.innerHTML = `<div class="modal-content">${content}</div>`;
+            document.body.appendChild(modal);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            if (modal) modal.remove();
+        }
+
+        function openProductModal(index) {
+            const p = index !== null ? state.products[index] : null;
+            showModal(`
+                <h3 class="modal-title">${p ? 'Editar' : 'Novo'} Produto</h3>
+                <div class="form-group">
+                    <label>SKU</label>
+                    <input type="text" id="pSku" value="${p ? p.sku : ''}">
+                </div>
+                <div class="form-group">
+                    <label>Nome</label>
+                    <input type="text" id="pName" value="${p ? p.name : ''}">
+                </div>
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <textarea id="pDesc" rows="3">${p ? p.description : ''}</textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Estoque</label>
+                        <input type="number" id="pStock" value="${p ? p.stock : 0}">
+                    </div>
+                    <div class="form-group">
+                        <label>Preço (R$)</label>
+                        <input type="number" id="pPrice" value="${p ? p.price : 0}" step="0.01">
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                    <button class="btn-save" onclick="saveProduct(${p ? p.id : null}, ${index})">Salvar</button>
+                </div>
+            `);
+        }
+
+        function saveProduct(id, index) {
+            const data = {
+                id: id || Date.now(),
+                sku: document.getElementById('pSku').value,
+                name: document.getElementById('pName').value,
+                description: document.getElementById('pDesc').value,
+                stock: parseInt(document.getElementById('pStock').value) || 0,
+                price: parseFloat(document.getElementById('pPrice').value) || 0
+            };
+            if (index !== null) {
+                state.products[index] = data;
+            } else {
+                state.products.push(data);
+            }
+            closeModal();
+            render();
+        }
+
+        function deleteProduct(index) {
+            if (confirm('Excluir este produto?')) {
+                state.products.splice(index, 1);
+                render();
+            }
+        }
+
+        function openSupplierModal(index) {
+            const s = index !== null ? state.suppliers[index] : null;
+            showModal(`
+                <h3 class="modal-title">${s ? 'Editar' : 'Novo'} Fornecedor</h3>
+                <div class="form-group">
+                    <label>Nome</label>
+                    <input type="text" id="sName" value="${s ? s.name : ''}">
+                </div>
+                <div class="form-group">
+                    <label>Contato</label>
+                    <input type="text" id="sContact" value="${s ? s.contact : ''}">
+                </div>
+                <div class="form-group">
+                    <label>Observações</label>
+                    <textarea id="sNotes" rows="3">${s ? s.notes : ''}</textarea>
+                </div>
+                <div class="btn-group">
+                    <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                    <button class="btn-save" onclick="saveSupplier(${s ? s.id : null}, ${index})">Salvar</button>
+                </div>
+            `);
+        }
+
+        function saveSupplier(id, index) {
+            const data = {
+                id: id || Date.now(),
+                name: document.getElementById('sName').value,
+                contact: document.getElementById('sContact').value,
+                notes: document.getElementById('sNotes').value
+            };
+            if (index !== null) {
+                state.suppliers[index] = data;
+            } else {
+                state.suppliers.push(data);
+            }
+            closeModal();
+            render();
+        }
+
+        function deleteSupplier(index) {
+            if (confirm('Excluir este fornecedor?')) {
+                state.suppliers.splice(index, 1);
+                render();
+            }
+        }
+
+        function openMovementModal(productId) {
+            const p = state.products.find(prod => prod.id === productId);
+            showModal(`
+                <h3 class="modal-title">Movimentação de Estoque</h3>
+                ${p ? `
+                    <div class="card" style="margin-bottom: 20px;">
+                        <h4 style="margin-bottom: 4px;">${p.name}</h4>
+                        <p style="color: #9ca3af; font-size: 14px;">Estoque atual: ${p.stock} unidades</p>
+                    </div>
+                ` : `
+                    <div class="form-group">
+                        <label>Produto</label>
+                        <select id="mProd">
+                            <option value="">Selecione</option>
+                            ${state.products.map(prod => `<option value="${prod.id}">${prod.name}</option>`).join('')}
+                        </select>
+                    </div>
+                `}
+                <div class="form-group">
+                    <label>Tipo</label>
+                    <select id="mType">
+                        <option value="entry">Entrada</option>
+                        <option value="exit">Saída</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Quantidade</label>
+                    <input type="number" id="mQty" placeholder="0">
+                </div>
+                <div class="btn-group">
+                    <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                    <button class="btn-save" onclick="saveMovement(${productId || null})">Registrar</button>
+                </div>
+            `);
+        }
+
+        function saveMovement(productId) {
+            const id = productId || parseInt(document.getElementById('mProd')?.value);
+            const type = document.getElementById('mType').value;
+            const qty = parseInt(document.getElementById('mQty').value) || 0;
+            
+            if (!id || qty <= 0) {
+                alert('Preencha todos os campos!');
+                return;
+            }
+
+            const product = state.products.find(p => p.id === id);
+            if (product) {
+                if (type === 'entry') {
+                    product.stock += qty;
+                } else {
+                    product.stock = Math.max(0, product.stock - qty);
+                }
+                closeModal();
+                render();
+                alert('Movimentação registrada!');
+            }
+        }
+
+        function generateBarcode(sku, name) {
+            showModal(`
+                <h3 class="modal-title">Código de Barras</h3>
+                <div class="barcode-modal">
+                    <p style="margin-bottom: 16px; color: #9ca3af;">${name}</p>
+                    <svg id="barcode"></svg>
+                    <div style="margin-top: 24px;">
+                        <button class="btn-primary" onclick="downloadBarcode('${sku}', '${name}')">💾 Download PNG</button>
+                    </div>
+                </div>
+            `);
+            
+            setTimeout(() => {
+                try {
+                    JsBarcode("#barcode", sku, {
+                        format: "CODE128",
+                        width: 2,
+                        height: 100,
+                        displayValue: true,
+                        fontSize: 16,
+                        margin: 10
+                    });
+                } catch(e) {
+                    alert('Erro ao gerar código de barras');
+                }
+            }, 100);
+        }
+
+        function downloadBarcode(sku, name) {
+            const svg = document.getElementById('barcode');
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            const data = new XMLSerializer().serializeToString(svg);
+            const img = new Image();
+            const blob = new Blob([data], {type: 'image/svg+xml'});
+            const url = URL.createObjectURL(blob);
+            
+            img.onload = function() {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+                
+                canvas.toBlob(function(blob) {
+                    const link = document.createElement('a');
+                    link.download = `barcode_${sku}.png`;
+                    link.href = URL.createObjectURL(blob);
+                    link.click();
+                });
+            };
+            
+            img.src = url;
+        }
+
+        function generateQRCode(sku, name) {
+            showModal(`
+                <h3 class="modal-title">QR Code</h3>
+                <div class="barcode-modal">
+                    <p style="margin-bottom: 16px; color: #9ca3af;">${name}</p>
+                    <canvas id="qrcode"></canvas>
+                    <div style="margin-top: 24px;">
+                        <button class="btn-primary" onclick="downloadQRCode('${sku}')">💾 Download PNG</button>
+                    </div>
+                </div>
+            `);
+            
+            setTimeout(() => {
+                const canvas = document.getElementById('qrcode');
+                const size = 200;
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                
+                // QR Code simples usando canvas
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, size, size);
+                ctx.fillStyle = 'black';
+                
+                // Gerar padrão QR simplificado
+                const qrSize = 25;
+                const cellSize = size / qrSize;
+                
+                // Criar padrão pseudo-aleatório baseado no SKU
+                const seed = sku.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                
+                for (let y = 0; y < qrSize; y++) {
+                    for (let x = 0; x < qrSize; x++) {
+                        const val = ((x * seed + y * 7) % 2);
+                        if (val === 0) {
+                            ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                        }
+                    }
+                }
+                
+                // Marcadores de canto (padrão QR)
+                const drawMarker = (x, y) => {
+                    ctx.fillStyle = 'black';
+                    ctx.fillRect(x, y, cellSize * 7, cellSize * 7);
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(x + cellSize, y + cellSize, cellSize * 5, cellSize * 5);
+                    ctx.fillStyle = 'black';
+                    ctx.fillRect(x + cellSize * 2, y + cellSize * 2, cellSize * 3, cellSize * 3);
+                };
+                
+                drawMarker(0, 0);
+                drawMarker(size - cellSize * 7, 0);
+                drawMarker(0, size - cellSize * 7);
+                
+                // Texto do SKU
+                ctx.fillStyle = 'black';
+                ctx.font = '14px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText(sku, size / 2, size - 5);
+            }, 100);
+        }
+
+        function downloadQRCode(sku) {
+            const canvas = document.getElementById('qrcode');
+            canvas.toBlob(function(blob) {
+                const link = document.createElement('a');
+                link.download = `qrcode_${sku}.png`;
+                link.href = URL.createObjectURL(blob);
+                link.click();
+            });
+        }
+
+        function exportToExcel() {
+            const data = state.products.map(p => ({
+                'SKU': p.sku,
+                'Nome': p.name,
+                'Descrição': p.description,
+                'Estoque': p.stock,
+                'Preço': p.price,
+                'Valor Total': p.stock * p.price
+            }));
+            
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Produtos');
+            
+            // Ajustar largura das colunas
+            const colWidths = [
+                {wch: 15}, // SKU
+                {wch: 30}, // Nome
+                {wch: 40}, // Descrição
+                {wch: 10}, // Estoque
+                {wch: 12}, // Preço
+                {wch: 15}  // Valor Total
+            ];
+            ws['!cols'] = colWidths;
+            
+            XLSX.writeFile(wb, 'produtos_fogos_premium.xlsx');
+        }
+
+        function importFromExcel(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                    
+                    jsonData.forEach(row => {
+                        const product = {
+                            id: Date.now() + Math.random(),
+                            sku: row.SKU || row.sku || '',
+                            name: row.Nome || row.name || '',
+                            description: row.Descrição || row['Descricao'] || row.description || '',
+                            stock: parseInt(row.Estoque || row.stock || 0),
+                            price: parseFloat(row.Preço || row['Preco'] || row.price || 0)
+                        };
+                        state.products.push(product);
+                    });
+                    
+                    render();
+                    alert(`${jsonData.length} produto(s) importado(s) com sucesso!`);
+                } catch (error) {
+                    alert('Erro ao importar arquivo: ' + error.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function handleFileImport() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.xlsx,.xls';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    importFromExcel(file);
+                }
+            };
+            input.click();
+        }
+
+        function render() {
+            const app = document.getElementById('app');
+
+            if (!state.token) {
+                app.innerHTML = `
+                    <div class="login-container">
+                        <div class="login-box">
+                            <div class="logo">✨</div>
+                            <h1>Fogos Premium</h1>
+                            <p class="subtitle">Sistema de Gestão</p>
+                            <div class="form-group">
+                                <label>Usuário</label>
+                                <input type="text" id="username" value="admin">
+                            </div>
+                            <div class="form-group">
+                                <label>Senha</label>
+                                <input type="password" id="password" value="admin">
+                            </div>
+                            <button onclick="handleLogin()">Entrar</button>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            let content = '';
+
+            if (state.currentPage === 'dashboard') {
+                const totalProducts = state.products.length;
+                const totalStock = state.products.reduce((sum, p) => sum + p.stock, 0);
+                const totalValue = state.products.reduce((sum, p) => sum + (p.stock * p.price), 0);
+                const lowStock = state.products.filter(p => p.stock < 50).length;
+
+                content = `
+                    <div class="page-header">
+                        <h2>Dashboard</h2>
+                        <p>Visão geral do sistema</p>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <p class="stat-label">Total de Produtos</p>
+                            <p class="stat-value">${totalProducts}</p>
+                        </div>
+                        <div class="stat-card">
+                            <p class="stat-label">Estoque Total</p>
+                            <p class="stat-value">${totalStock}</p>
+                        </div>
+                        <div class="stat-card">
+                            <p class="stat-label">Valor Total</p>
+                            <p class="stat-value">R$ ${totalValue.toFixed(2)}</p>
+                        </div>
+                        <div class="stat-card">
+                            <p class="stat-label">Estoque Baixo</p>
+                            <p class="stat-value">${lowStock}</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3 style="margin-bottom: 16px;">Ações Rápidas</h3>
+                        <div class="action-buttons">
+                            <button class="btn-export" onclick="exportToExcel()">📥 Exportar Excel</button>
+                            <button class="btn-export" onclick="handleFileImport()">📤 Importar Excel</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (state.currentPage === 'products') {
+                content = `
+                    <div class="header-actions">
+                        <div class="page-header">
+                            <h2>Produtos</h2>
+                            <p>Gerencie seu catálogo</p>
+                        </div>
+                        <button class="btn-primary" onclick="openProductModal(null)">+ Novo Produto</button>
+                    </div>
+                    <div class="products-grid">
+                        ${state.products.map((p, i) => `
+                            <div class="card">
+                                <div class="card-header">
+                                    <div style="flex: 1;">
+                                        <div style="margin-bottom: 12px;">
+                                            <span class="badge badge-sku">${p.sku}</span>
+                                            <span class="badge ${p.stock > 100 ? 'badge-stock-high' : p.stock > 50 ? 'badge-stock-medium' : 'badge-stock-low'}">
+                                                Estoque: ${p.stock}
+                                            </span>
+                                        </div>
+                                        <h3 class="card-title">${p.name}</h3>
+                                        <p class="card-description">${p.description}</p>
+                                        <p class="card-price">R$ ${p.price.toFixed(2)}</p>
+                                    </div>
+                                    <div class="card-actions">
+                                        <button class="btn-icon btn-edit" onclick="openProductModal(${i})">✏️</button>
+                                        <button class="btn-icon btn-delete" onclick="deleteProduct(${i})">🗑️</button>
+                                        <button class="btn-icon btn-barcode" onclick="generateBarcode('${p.sku}', '${p.name}')">📊</button>
+                                        <button class="btn-icon btn-qr" onclick="generateQRCode('${p.sku}', '${p.name}')">📱</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            if (state.currentPage === 'movements') {
+                content = `
+                    <div class="header-actions">
+                        <div class="page-header">
+                            <h2>Movimentações</h2>
+                            <p>Controle de estoque</p>
+                        </div>
+                        <button class="btn-primary" onclick="openMovementModal(null)">+ Nova Movimentação</button>
+                    </div>
+                    <div class="movement-grid">
+                        ${state.products.map(p => `
+                            <div class="movement-card">
+                                <div class="movement-card-header">
+                                    <div>
+                                        <h4 style="margin-bottom: 4px;">${p.name}</h4>
+                                        <p style="font-size: 14px; color: #9ca3af;">${p.sku}</p>
+                                    </div>
+                                    <span class="badge ${p.stock > 100 ? 'badge-stock-high' : p.stock > 50 ? 'badge-stock-medium' : 'badge-stock-low'}">
+                                        ${p.stock} un.
+                                    </span>
+                                </div>
+                                <div class="movement-buttons">
+                                    <button class="btn-entry" onclick="openMovementModal(${p.id})">⬇️ Entrada</button>
+                                    <button class="btn-exit" onclick="openMovementModal(${p.id})">⬆️ Saída</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            if (state.currentPage === 'suppliers') {
+                content = `
+                    <div class="header-actions">
+                        <div class="page-header">
+                            <h2>Fornecedores</h2>
+                            <p>Gerencie seus parceiros</p>
+                        </div>
+                        <button class="btn-primary" onclick="openSupplierModal(null)">+ Novo Fornecedor</button>
+                    </div>
+                    <div class="products-grid">
+                        ${state.suppliers.map((s, i) => `
+                            <div class="card">
+                                <div class="card-header">
+                                    <div style="flex: 1;">
+                                        <h3 class="card-title">${s.name}</h3>
+                                        <p class="card-description">📞 ${s.contact}</p>
+                                        <p style="color: #6b7280; font-size: 14px; margin-top: 8px;">${s.notes}</p>
+                                    </div>
+                                    <div class="card-actions">
+                                        <button class="btn-icon btn-edit" onclick="openSupplierModal(${i})">✏️</button>
+                                        <button class="btn-icon btn-delete" onclick="deleteSupplier(${i})">🗑️</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            app.innerHTML = `
+                <div class="app-container">
+                    <aside class="sidebar">
+                        <div class="sidebar-header">
+                            <div class="sidebar-logo">✨</div>
+                            <div class="sidebar-title">
+                                <h2>Fogos Premium</h2>
+                                <p>Sistema ERP</p>
+                            </div>
+                        </div>
+                        <nav>
+                            <button class="nav-item ${state.currentPage === 'dashboard' ? 'active' : ''}" onclick="navigateTo('dashboard')">
+                                <span>📊</span>
+                                <span>Dashboard</span>
+                            </button>
+                            <button class="nav-item ${state.currentPage === 'products' ? 'active' : ''}" onclick="navigateTo('products')">
+                                <span>📦</span>
+                                <span>Produtos</span>
+                            </button>
+                            <button class="nav-item ${state.currentPage === 'movements' ? 'active' : ''}" onclick="navigateTo('movements')">
+                                <span>🔄</span>
+                                <span>Movimentações</span>
+                            </button>
+                            <button class="nav-item ${state.currentPage === 'suppliers' ? 'active' : ''}" onclick="navigateTo('suppliers')">
+                                <span>👥</span>
+                                <span>Fornecedores</span>
+                            </button>
+                        </nav>
+                        <button class="nav-item logout-btn" onclick="handleLogout()">
+                            <span>🚪</span>
+                            <span>Sair</span>
+                        </button>
+                    </aside>
+                    <main class="main-content">
+                        ${content}
+                    </main>
+                </div>
+            `;
+        }
+
+        render();
+    </script>
+</body>
+</html>
+                                
