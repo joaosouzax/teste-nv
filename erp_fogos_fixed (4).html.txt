@@ -1,0 +1,12 @@
+                const totalProducts = state.products.length;
+                const totalStock = state.products.reduce((sum, p) => sum + p.stock, 0);
+                const totalValue = state.products.reduce((sum, p) => sum + (p.stock * p.price), 0);
+                const lowStock = state.products.filter(p => p.stock < 50).length;
+                
+                // Formatar valor em Real brasileiro
+                const formatCurrency = (value) => {
+                    return value.toLocaleString('pt-BR', { 
+                        style: 'currency', 
+                        currency: 'BRL' 
+                    });
+                };
